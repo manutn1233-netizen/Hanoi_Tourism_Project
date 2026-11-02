@@ -87,3 +87,4 @@ if __name__ == "__main__":
     print(f"GBFS Search: Path = {' -> '.join(path_g)} | Cost = {cost_g} mins (SUB-OPTIMAL)")
     print(f"Performance Gain: A* is {cost_g - cost_a} minutes faster than GBFS!")
     print("--------------------------------------------------")
+ 
