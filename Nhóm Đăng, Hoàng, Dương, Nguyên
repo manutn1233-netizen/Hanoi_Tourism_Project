@@ -1,0 +1,89 @@
+import heapq
+
+graph = {
+    'S': {'A': 16, 'B': 25, 'C': 19},
+    'A': {'D': 15, 'E': 10, 'F': 7},
+    'B': {'D': 11, 'E': 7,  'F': 14},
+    'C': {'D': 14, 'E': 6,  'F': 13},
+    'D': {'I': 17, 'J': 11, 'K': 10},
+    'E': {'I': 6,  'J': 8,  'K': 14},
+    'F': {'I': 14, 'J': 5,  'K': 17},
+    'I': {'G': 11},
+    'J': {'G': 14},
+    'K': {'G': 16},
+    'G': {}
+}
+
+h = {
+    'S': 240,
+    'A': 14, 'B': 7,  'C': 12,
+    'D': 11, 'E': 10, 'F': 16,
+    'I': 11, 'J': 14, 'K': 16,
+    'G': 0
+}
+
+def a_star_search(start, goal):
+    open_set = []
+    counter = 0
+    heapq.heappush(open_set, (h[start], counter, 0, start, [start]))
+    
+    print("==================================================")
+    print("         A* SEARCH ALGORITHM TRACE LOG            ")
+    print("==================================================")
+    step = 0
+    while open_set:
+        f, _, g, curr, path = heapq.heappop(open_set)
+        print(f"Step {step:2d} | Node: {curr:2s} | g={g:2d}m | h={h[curr]:2d}m | f={f:2d}m | Path: {' -> '.join(path)}")
+        
+        if curr == goal:
+            print("==================================================")
+            print(f"-> A* OPTIMAL PATH FOUND: {' -> '.join(path)}")
+            print(f"-> TOTAL TRAVEL TIME: {g} MINUTES")
+            print("==================================================\n")
+            return path, g
+            
+        for neighbor, weight in graph[curr].items():
+            counter += 1
+            g_new = g + weight
+            f_new = g_new + h[neighbor]
+            heapq.heappush(open_set, (f_new, counter, g_new, neighbor, path + [neighbor]))
+        step += 1
+    return None, float('inf')
+
+def gbfs_search(start, goal):
+    open_set = []
+    counter = 0
+    heapq.heappush(open_set, (h[start], counter, start, 0, [start]))
+    
+    print("==================================================")
+    print("    GREEDY BEST-FIRST SEARCH (GBFS) TRACE LOG     ")
+    print("==================================================")
+    step = 0
+    while open_set:
+        h_val, _, curr, g, path = heapq.heappop(open_set)
+        print(f"Step {step:2d} | Node: {curr:2s} | h={h_val:2d}m | g_acc={g:2d}m | Path: {' -> '.join(path)}")
+        
+        if curr == goal:
+            print("==================================================")
+            print(f"-> GBFS PATH FOUND: {' -> '.join(path)}")
+            print(f"-> TOTAL TRAVEL TIME: {g} MINUTES")
+            print("==================================================\n")
+            return path, g
+            
+        for neighbor, weight in graph[curr].items():
+            counter += 1
+            g_new = g + weight
+            heapq.heappush(open_set, (h[neighbor], counter, neighbor, g_new, path + [neighbor]))
+        step += 1
+    return None, float('inf')
+
+if __name__ == "__main__":
+    path_a, cost_a = a_star_search('S', 'G')
+    path_g, cost_g = gbfs_search('S', 'G')
+    
+    print("--------------------------------------------------")
+    print("SUMMARY COMPARISON:")
+    print(f"A* Search  : Path = {' -> '.join(path_a)} | Cost = {cost_a} mins (OPTIMAL)")
+    print(f"GBFS Search: Path = {' -> '.join(path_g)} | Cost = {cost_g} mins (SUB-OPTIMAL)")
+    print(f"Performance Gain: A* is {cost_g - cost_a} minutes faster than GBFS!")
+    print("--------------------------------------------------")
